@@ -5,10 +5,13 @@
   "dependencies": {
     "@blueprintjs/core": "^3.17.1",
     "@blueprintjs/icons": "^3.9.1",
+    "aws-amplify": "^1.1.29",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.9",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
+    "react-router-prop-types": "^1.0.4",
     "react-scripts": "3.0.1"
   },
   "scripts": {
@@ -31,5 +34,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "17.1.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.2"
   }
 }
