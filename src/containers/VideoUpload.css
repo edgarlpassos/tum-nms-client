@@ -1,0 +1,17 @@
+@media all and (min-width: 480px) {
+  .VideoUpload {
+    padding: 60px 0;
+  }
+
+  .VideoUpload form {
+    margin: 0 auto;
+    max-width: 320px;
+  }
+}
+
+.VideoUpload form span.help-block {
+  font-size: 14px;
+  padding-bottom: 10px;
+  color: #999;
+}
+

@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
 import VideoItem from './VideoItem';
+
+const propTypes = {
+  numVideos: PropTypes.number,
+  owner: PropTypes.number,
+};
+
+const defaultProps = {
+  numVideos: 5,
+  owner: null, // if not sent as prop: loads videos from all users
+};
 
 class VideoFeed extends Component {
   constructor(props) {
     super(props);
     this.state = { videos: null };
-  };
-
-  static defaultProps = {
-     numVideos: "5",
-     owner: null, // if not sent as prop: loads videos from all users
-   };
+  }
 
   async componentDidMount() {
     try {
@@ -28,21 +34,17 @@ class VideoFeed extends Component {
   }
 
   filterNewest(filtered) {
+    const { numVideos } = this.props;
     filtered.sort(this.compDate);
-    filtered = filtered.filter((i, index) =>
-      (index < parseInt(this.props.numVideos))
-    );
-    return filtered
+    return filtered.filter((i, index) => (index < numVideos));
   }
 
   filterQuery(videos) {
+    const { owner } = this.props;
     let filtered = videos;
-    // if profile page:   show only videos from the user of the profile
-    // else if home page: show videos from all users
-    if (this.props.owner != null) {
-      filtered = filtered.filter(row =>
-        row.owner === parseInt(this.props.owner)
-      );
+
+    if (owner != null) {
+      filtered = filtered.filter(row => row.owner === owner);
     }
 
     filtered = this.filterNewest(filtered);
@@ -50,23 +52,21 @@ class VideoFeed extends Component {
   }
 
   renderVidFeed() {
-    if (this.state.videos === null) {
+    const { videos } = this.state;
+
+    if (videos === null) {
       return (
         <Spinner animation="border" role="status">
           <span className="sr-only">Loading...</span>
         </Spinner>
       );
     }
-    else {
-      return (
-        <Container className="VideoFeed-container">
-          {
-            this.state.videos.map((video) =>
-              <VideoItem id={ video.id } key={ video.id } />
-          )}
-        </Container>
-      );
-    }
+
+    return (
+      <Container className="VideoFeed-container">
+        { videos.map(video => <VideoItem id={video.id} key={video.id} />) }
+      </Container>
+    );
   }
 
   render() {
@@ -77,5 +77,8 @@ class VideoFeed extends Component {
     );
   }
 }
+
+VideoFeed.propTypes = propTypes;
+VideoFeed.defaultProps = defaultProps;
 
 export default VideoFeed;

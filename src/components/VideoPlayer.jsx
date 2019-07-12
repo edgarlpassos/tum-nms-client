@@ -8,8 +8,8 @@ export default (props) => (
       url={ props.url }
       loop
       controls
-      width="100%"
-      height="100%"
+      width="600px"
+      height="400px"
     />
   </div>
 );
