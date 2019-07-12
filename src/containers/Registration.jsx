@@ -52,8 +52,14 @@ class Registration extends Component {
     const { history, setAuthenticationStatus } = this.props;
 
     try {
-      await this.createUser(username);
-      await Auth.signUp({ username, password });
+      const user = await this.createUser(username);
+      console.log(user)
+
+      await Auth.signUp({
+        username,
+        password,
+        attributes: { 'custom:id': user.id.toString(10) },
+      });
 
       await Auth.signIn(username, password);
       setAuthenticationStatus(true);
