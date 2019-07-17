@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
-import VideoItem from './VideoItem';
+import PreviewItem from './PreviewItem';
 
 const propTypes = {
   numVideos: PropTypes.number,
@@ -14,7 +14,7 @@ const defaultProps = {
   owner: null, // if not sent as prop: loads videos from all users
 };
 
-class VideoFeed extends Component {
+class PreviewFeed extends Component {
   constructor(props) {
     super(props);
     this.state = { videos: null };
@@ -46,7 +46,6 @@ class VideoFeed extends Component {
     if (owner != null) {
       filtered = filtered.filter(row => row.owner === owner);
     }
-
     filtered = this.filterNewest(filtered);
     this.setState({ videos: filtered });
   }
@@ -63,22 +62,22 @@ class VideoFeed extends Component {
     }
 
     return (
-      <Container className="VideoFeed-container">
-        { videos.map(video => <VideoItem id={video.id} key={video.id} />) }
-      </Container>
+      <div>
+        { videos.map(video => <PreviewItem id={video.id} key={video.id} />) }
+      </div>
     );
   }
 
   render() {
     return (
-      <div>
+      <Container className="PreviewFeed">
         { this.renderVidFeed() }
-      </div>
+      </Container>
     );
   }
 }
 
-VideoFeed.propTypes = propTypes;
-VideoFeed.defaultProps = defaultProps;
+PreviewFeed.propTypes = propTypes;
+PreviewFeed.defaultProps = defaultProps;
 
-export default VideoFeed;
+export default PreviewFeed;

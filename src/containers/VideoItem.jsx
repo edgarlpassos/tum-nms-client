@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import ReactRouterPropTypes from 'react-router-prop-types';
+import { Link } from 'react-router-dom';
 import { API } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
-import VideoPlayer from './VideoPlayer';
+import VideoPlayer from '../components/VideoPlayer';
 import { getFile } from '../lib/awsLib';
 import './VideoItem.css';
 
 const propTypes = {
-  id: PropTypes.number.isRequired,
+  match: ReactRouterPropTypes.match.isRequired,
 };
 
 class VideoItem extends Component {
@@ -21,8 +22,8 @@ class VideoItem extends Component {
 
   async componentDidMount() {
     try {
-      const { id } = this.props;
-      const video = await API.get('videocloud', `/videos/${id}`);
+      const { match } = this.props;
+      const video = await API.get('videocloud', `/videos/${match.params.id}`);
       const S3url = await getFile(video.location);
       this.setState({ video, S3url });
     } catch (error) {
@@ -42,21 +43,26 @@ class VideoItem extends Component {
     }
 
     return (
-      <Container className="VideoItem-container">
+      <div>
         <VideoPlayer url={S3url} />
         <h2>{video.name}</h2>
-        <p>{`User: ${video.owner}`}</p>
+        <p>
+          User:&nbsp;
+          <Link to={`/profile/${video.owner}`} className="active">
+            {video.owner}
+          </Link>
+        </p>
         <p>{`Uploaded: ${new Date(video.createdAt).toDateString()}`}</p>
         <hr className="mt-5 mb-5" />
-      </Container>
+      </div>
     );
   }
 
   render() {
     return (
-      <div>
+      <Container className="VideoItem">
         {this.loader()}
-      </div>
+      </Container>
     );
   }
 }
