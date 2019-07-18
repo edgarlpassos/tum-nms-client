@@ -23,9 +23,10 @@ class PreviewFeed extends Component {
   async componentDidMount() {
     try {
       const videos = await API.get('videocloud', '/videos');
+
       this.filterQuery(videos);
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -63,7 +64,7 @@ class PreviewFeed extends Component {
 
     return (
       <div>
-        { videos.map(video => <PreviewItem id={video.id} key={video.id} />) }
+        { videos.map(video => <PreviewItem video={video} key={video.id} />) }
       </div>
     );
   }
