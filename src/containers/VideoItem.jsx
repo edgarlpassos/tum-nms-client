@@ -25,9 +25,10 @@ class VideoItem extends Component {
       const { match } = this.props;
       const video = await API.get('videocloud', `/videos/${match.params.id}`);
       const S3url = await getFile(video.location);
+
       this.setState({ video, S3url });
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -49,7 +50,7 @@ class VideoItem extends Component {
         <p>
           User:&nbsp;
           <Link to={`/profile/${video.owner}`} className="active">
-            {video.owner}
+            {video.User.username}
           </Link>
         </p>
         <p>{`Uploaded: ${new Date(video.createdAt).toDateString()}`}</p>
