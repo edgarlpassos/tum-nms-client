@@ -11,6 +11,7 @@ const propTypes = {
 class Profile extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       user: null,
     };
@@ -20,14 +21,13 @@ class Profile extends Component {
     try {
       const { match } = this.props;
       const user = await API.get('videocloud', `/users/${match.params.id}`);
-
       this.setState({ user });
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  loader() {
+  renderAux() {
     const { user } = this.state;
 
     if (user === null) {
@@ -41,8 +41,8 @@ class Profile extends Component {
     return (
       <div>
         <h1>{`Profile Page of: ${user.username}`}</h1>
-        <hr className="mt-1 mb-5" />
-        <PreviewFeed numVideos={100} owner={user.id} />
+        <hr className="mt-0 mb-5" />
+        <PreviewFeed owner={user.id} />
       </div>
     );
   }
@@ -50,7 +50,7 @@ class Profile extends Component {
   render() {
     return (
       <Container className="Profile" fluid>
-        {this.loader()}
+        {this.renderAux()}
       </Container>
     );
   }

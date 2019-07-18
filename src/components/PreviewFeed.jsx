@@ -5,53 +5,38 @@ import { Container, Spinner } from 'react-bootstrap';
 import PreviewItem from './PreviewItem';
 
 const propTypes = {
-  numVideos: PropTypes.number,
   owner: PropTypes.number,
 };
 
 const defaultProps = {
-  numVideos: 5,
   owner: null, // if not sent as prop: loads videos from all users
 };
 
 class PreviewFeed extends Component {
   constructor(props) {
     super(props);
-    this.state = { videos: null };
+
+    this.state = {
+      videos: null,
+    };
   }
 
   async componentDidMount() {
-    try {
-      const videos = await API.get('videocloud', '/videos');
-
-      this.filterQuery(videos);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  compDate(a, b) {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  }
-
-  filterNewest(filtered) {
-    const { numVideos } = this.props;
-    filtered.sort(this.compDate);
-    return filtered.filter((i, index) => (index < numVideos));
-  }
-
-  filterQuery(videos) {
     const { owner } = this.props;
-    let filtered = videos;
 
-    if (owner != null) {
-      filtered = filtered.filter(row => row.owner === owner);
+    try {
+      let videos = await API.get('videocloud', '/videos'); // adapt to api
+
+      if (owner != null) {
+        videos = videos.filter(row => row.owner === owner);
+      }
+      this.setState({ videos });
+    } catch (error) {
+      console.error(error);
     }
-    filtered = this.filterNewest(filtered);
-    this.setState({ videos: filtered });
   }
 
-  renderVidFeed() {
+  renderAux() {
     const { videos } = this.state;
 
     if (videos === null) {
@@ -64,7 +49,7 @@ class PreviewFeed extends Component {
 
     return (
       <div>
-        { videos.map(video => <PreviewItem video={video} key={video.id} />) }
+        {videos.map(video => <PreviewItem video={video} key={video.id} />)}
       </div>
     );
   }
@@ -72,7 +57,7 @@ class PreviewFeed extends Component {
   render() {
     return (
       <Container className="PreviewFeed">
-        { this.renderVidFeed() }
+        {this.renderAux()}
       </Container>
     );
   }
