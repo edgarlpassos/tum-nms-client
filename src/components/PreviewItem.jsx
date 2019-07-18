@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Container, Col, Row } from 'react-bootstrap';
-import './PreviewItem.css';
 
 const propTypes = {
   video: PropTypes.shape({
@@ -24,7 +23,7 @@ function PreviewItem(props) {
   return (
     <Container className="PreviewItem">
       <Row>
-        <Col xs lg="2">
+        <Col lg="2">
           <pre>Thumbnail maybe?</pre>
         </Col>
         <Col md="auto">
@@ -32,12 +31,11 @@ function PreviewItem(props) {
             <h2>{video.name}</h2>
           </Link>
           <p>
-            User:&nbsp;
-            <Link to={`/profile/${video.owner}`} className="active">
+            <Link to={`/profile/${video.owner}`} className="active bold">
               {video.User.username}
             </Link>
           </p>
-          <p>{`Uploaded: ${new Date(video.createdAt).toDateString()}`}</p>
+          <p className="grey">{`Published on: ${new Date(video.createdAt).toDateString()}`}</p>
         </Col>
       </Row>
       <hr className="mt-5 mb-5" />

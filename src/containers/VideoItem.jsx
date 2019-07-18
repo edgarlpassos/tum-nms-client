@@ -3,8 +3,9 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 import { Link } from 'react-router-dom';
 import { API } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
-import VideoPlayer from '../components/VideoPlayer';
 import { getFile } from '../lib/awsLib';
+import CommentFeed from '../components/CommentFeed';
+import VideoPlayer from '../components/VideoPlayer';
 import './VideoItem.css';
 
 const propTypes = {
@@ -14,6 +15,7 @@ const propTypes = {
 class VideoItem extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       video: null,
       S3url: null,
@@ -25,14 +27,13 @@ class VideoItem extends Component {
       const { match } = this.props;
       const video = await API.get('videocloud', `/videos/${match.params.id}`);
       const S3url = await getFile(video.location);
-
       this.setState({ video, S3url });
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  loader() {
+  renderAux() {
     const { video, S3url } = this.state;
 
     if (video === null) {
@@ -46,15 +47,15 @@ class VideoItem extends Component {
     return (
       <div>
         <VideoPlayer url={S3url} />
-        <h2>{video.name}</h2>
-        <p>
-          User:&nbsp;
-          <Link to={`/profile/${video.owner}`} className="active">
+        <h1>{video.name}</h1>
+        <span>
+          <Link to={`/profile/${video.owner}`} className="active bold">
             {video.User.username}
           </Link>
-        </p>
-        <p>{`Uploaded: ${new Date(video.createdAt).toDateString()}`}</p>
-        <hr className="mt-5 mb-5" />
+          <p className="grey">{`Published on: ${new Date(video.createdAt).toDateString()}`}</p>
+        </span>
+        <hr className="mt-0 mb-4" />
+        <CommentFeed videoID={video.id} />
       </div>
     );
   }
@@ -62,7 +63,7 @@ class VideoItem extends Component {
   render() {
     return (
       <Container className="VideoItem">
-        {this.loader()}
+        {this.renderAux()}
       </Container>
     );
   }

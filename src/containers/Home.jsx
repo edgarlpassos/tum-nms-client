@@ -7,8 +7,8 @@ class Home extends Component {
     return (
       <Container className="Home" fluid>
         <h1>Home Page</h1>
-        <hr className="mt-1 mb-5" />
-        <PreviewFeed numVideos={100} />
+        <hr className="mt-0 mb-5" />
+        <PreviewFeed />
       </Container>
     );
   }
