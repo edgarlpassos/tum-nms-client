@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 
 const propTypes = {
-  videoID: PropTypes.number.isRequired,
+  videoId: PropTypes.number.isRequired,
 };
 
 class CommentUpload extends Component {
@@ -40,7 +40,7 @@ class CommentUpload extends Component {
 
   async handleSubmit(event) {
     const { content } = this.state;
-    const { videoID } = this.props;
+    const { videoId } = this.props;
 
     event.preventDefault();
 
@@ -50,7 +50,7 @@ class CommentUpload extends Component {
       await API.post('videocloud', '/comments', {
         body: {
           content,
-          video: videoID,
+          video: videoId,
           timestamp: this.defaultTimestamp(),
           created_by: user.attributes['custom:id'],
         },
@@ -68,6 +68,7 @@ class CommentUpload extends Component {
 
   render() {
     const { content, timestamp } = this.state;
+    const videoDuration = 60; // TODO, fetch video length from S3 video url
 
     return (
       <Container className="CommentUpload">
@@ -87,7 +88,7 @@ class CommentUpload extends Component {
                 <Form.Control
                   type="number"
                   min={0}
-                  max={19}
+                  max={videoDuration}
                   onChange={this.handleChange}
                   value={timestamp}
                   placeholder="Select timestamp..."

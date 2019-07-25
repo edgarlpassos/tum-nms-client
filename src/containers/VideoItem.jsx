@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { Link } from 'react-router-dom';
-import { API } from 'aws-amplify';
+import { API, Auth } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
 import { getFile } from '../lib/awsLib';
 import CommentFeed from '../components/CommentFeed';
@@ -19,6 +19,7 @@ class VideoItem extends Component {
     this.state = {
       video: null,
       S3url: null,
+      userId: null,
     };
   }
 
@@ -27,14 +28,18 @@ class VideoItem extends Component {
       const { match } = this.props;
       const video = await API.get('videocloud', `/videos/${match.params.id}`);
       const S3url = await getFile(video.location);
-      this.setState({ video, S3url });
+      const user = await Auth.currentAuthenticatedUser();
+
+      const userId = parseInt(user.attributes['custom:id'], 10);
+
+      this.setState({ video, S3url, userId });
     } catch (error) {
       console.error(error);
     }
   }
 
   renderAux() {
-    const { video, S3url } = this.state;
+    const { video, S3url, userId } = this.state;
 
     if (video === null) {
       return (
@@ -55,7 +60,7 @@ class VideoItem extends Component {
           <p className="grey">{`Published on: ${new Date(video.createdAt).toDateString()}`}</p>
         </span>
         <hr className="mt-0 mb-4" />
-        <CommentFeed videoID={video.id} />
+        <CommentFeed videoId={video.id} userId={userId} />
       </div>
     );
   }

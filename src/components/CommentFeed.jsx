@@ -6,7 +6,8 @@ import CommentUpload from './CommentUpload';
 import CommentItem from './CommentItem';
 
 const propTypes = {
-  videoID: PropTypes.number.isRequired,
+  videoId: PropTypes.number.isRequired,
+  userId: PropTypes.number.isRequired,
 };
 
 class CommentFeed extends Component {
@@ -19,10 +20,10 @@ class CommentFeed extends Component {
   }
 
   async componentDidMount() {
-    const { videoID } = this.props;
+    const { videoId, userId } = this.props;
 
     try {
-      const comments = await API.get('videocloud', `/videos/${videoID}/comments`);
+      const comments = await API.get('videocloud', `/comments/${videoId}/${userId}`);
       this.setState({ comments });
     } catch (error) {
       console.error(error);
@@ -30,6 +31,7 @@ class CommentFeed extends Component {
   }
 
   renderAux() {
+    const { userId } = this.props;
     const { comments } = this.state;
 
     if (comments === null) {
@@ -42,17 +44,19 @@ class CommentFeed extends Component {
 
     return (
       <div>
-        { comments.map(comment => <CommentItem comment={comment} key={comment.id} />) }
+        {comments.map(comment => (
+          <CommentItem comment={comment} userId={userId} key={comment.id} />
+        ))}
       </div>
     );
   }
 
   render() {
-    const { videoID } = this.props;
+    const { videoId } = this.props;
 
     return (
       <Container className="CommentFeed">
-        <CommentUpload videoID={videoID} />
+        <CommentUpload videoId={videoId} />
         { this.renderAux() }
       </Container>
     );
