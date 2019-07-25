@@ -1,38 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { API } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
 import CommentUpload from './CommentUpload';
 import CommentItem from './CommentItem';
 
 const propTypes = {
+  comments: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number.isRequired })).isRequired,
+  handleSeek: PropTypes.func.isRequired,
+  videoProgress: PropTypes.number,
   videoId: PropTypes.number.isRequired,
-  userId: PropTypes.number.isRequired,
+  userId: PropTypes.number,
+};
+
+const defaultProps = {
+  userId: null,
+  videoProgress: 0,
 };
 
 class CommentFeed extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      comments: null,
-    };
-  }
-
-  async componentDidMount() {
-    const { videoId, userId } = this.props;
-
-    try {
-      const comments = await API.get('videocloud', `/comments/${videoId}/${userId}`);
-      this.setState({ comments });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   renderAux() {
-    const { userId } = this.props;
-    const { comments } = this.state;
+    const { handleSeek, userId, comments } = this.props;
 
     if (comments === null) {
       return (
@@ -45,18 +32,22 @@ class CommentFeed extends Component {
     return (
       <div>
         {comments.map(comment => (
-          <CommentItem comment={comment} userId={userId} key={comment.id} />
+          <CommentItem handleSeek={handleSeek} comment={comment} userId={userId} key={comment.id} />
         ))}
       </div>
     );
   }
 
   render() {
-    const { videoId } = this.props;
+    const {
+      videoProgress,
+      videoId,
+      userId,
+    } = this.props;
 
     return (
       <Container className="CommentFeed">
-        <CommentUpload videoId={videoId} />
+        { userId ? <CommentUpload videoId={videoId} videoProgress={videoProgress} /> : null}
         { this.renderAux() }
       </Container>
     );
@@ -64,5 +55,6 @@ class CommentFeed extends Component {
 }
 
 CommentFeed.propTypes = propTypes;
+CommentFeed.defaultProps = defaultProps;
 
 export default CommentFeed;
