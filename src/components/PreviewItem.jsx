@@ -23,10 +23,10 @@ function PreviewItem(props) {
   return (
     <Container className="PreviewItem">
       <Row>
-        <Col lg="2">
+        <Col md="auto">
           <pre>Thumbnail maybe?</pre>
         </Col>
-        <Col md="auto">
+        <Col>
           <Link to={`/video/${video.id}`} className="active">
             <h2>{video.name}</h2>
           </Link>
