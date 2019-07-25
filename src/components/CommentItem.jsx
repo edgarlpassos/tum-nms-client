@@ -4,6 +4,7 @@ import { API } from 'aws-amplify';
 import { Link } from 'react-router-dom';
 import { Button, Container } from 'react-bootstrap';
 import './CommentItem.css';
+import { formatTimestamp } from '../utils';
 
 const propTypes = {
   comment: PropTypes.shape({
@@ -18,8 +19,13 @@ const propTypes = {
     createdAt: PropTypes.string,
     updatedAt: PropTypes.string,
   }).isRequired,
-  userId: PropTypes.number.isRequired,
+  handleSeek: PropTypes.func.isRequired,
+  userId: PropTypes.number,
 };
+
+const defaultProps = {
+  userId: null,
+}
 
 class CommentItem extends Component {
   constructor(props) {
@@ -38,7 +44,8 @@ class CommentItem extends Component {
   }
 
   handleClick() {
-    console.log("Todo: goto video frame at the specific timestamp");
+    const { handleSeek, comment: { timestamp } } = this.props;
+    handleSeek(timestamp);
   }
 
   async addLike() {
@@ -71,18 +78,20 @@ class CommentItem extends Component {
   }
 
   renderTimestamp(timestamp) {
-    if (timestamp >= 0) {
-      return (
-        <span className="grey">
-          {' - timestamp:'}
-          <Button variant="link" onClick={this.handleClick}>{timestamp}</Button>
-        </span>
-      );
-    }
-    return null;
+    return (
+      <span className="grey">
+        {' - timestamp:'}
+        <Button variant="link" onClick={this.handleClick}>{timestamp}</Button>
+      </span>
+    );
   }
 
   renderButton() {
+    const { userId } = this.props;
+    if (!userId) {
+      return;
+    }
+
     const { liked } = this.state;
 
     if (liked === 0) {
@@ -114,7 +123,7 @@ class CommentItem extends Component {
         </span>
         <p>
           {comment.content}
-          {this.renderTimestamp(comment.timestamp)}
+          {this.renderTimestamp(formatTimestamp(comment.timestamp))}
         </p>
         <span>
           {this.renderButton()}
@@ -126,5 +135,6 @@ class CommentItem extends Component {
 }
 
 CommentItem.propTypes = propTypes;
+CommentItem.defaultProps = defaultProps;
 
 export default CommentItem;

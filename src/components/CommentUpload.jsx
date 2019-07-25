@@ -4,9 +4,15 @@ import { API, Auth } from 'aws-amplify';
 import {
   Button, Col, Container, Form, Row,
 } from 'react-bootstrap';
+import { formatTimestamp } from '../utils';
 
 const propTypes = {
   videoId: PropTypes.number.isRequired,
+  videoProgress: PropTypes.number,
+};
+
+const defaultProps = {
+  videoProgress: 0,
 };
 
 class CommentUpload extends Component {
@@ -15,7 +21,6 @@ class CommentUpload extends Component {
 
     this.state = {
       content: '',
-      timestamp: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -29,18 +34,9 @@ class CommentUpload extends Component {
     });
   }
 
-  defaultTimestamp() {
-    const { timestamp } = this.state;
-
-    if (timestamp === '') {
-      return -1;
-    }
-    return timestamp;
-  }
-
   async handleSubmit(event) {
     const { content } = this.state;
-    const { videoId } = this.props;
+    const { videoId, videoProgress } = this.props;
 
     event.preventDefault();
 
@@ -51,7 +47,7 @@ class CommentUpload extends Component {
         body: {
           content,
           video: videoId,
-          timestamp: this.defaultTimestamp(),
+          timestamp: videoProgress,
           created_by: user.attributes['custom:id'],
         },
       });
@@ -67,8 +63,8 @@ class CommentUpload extends Component {
   }
 
   render() {
-    const { content, timestamp } = this.state;
-    const videoDuration = 60; // TODO, fetch video length from S3 video url
+    const { content } = this.state;
+    const { videoProgress } = this.props;
 
     return (
       <Container className="CommentUpload">
@@ -84,16 +80,7 @@ class CommentUpload extends Component {
               </Form.Group>
             </Col>
             <Col md={3}>
-              <Form.Group controlId="timestamp">
-                <Form.Control
-                  type="number"
-                  min={0}
-                  max={videoDuration}
-                  onChange={this.handleChange}
-                  value={timestamp}
-                  placeholder="Select timestamp..."
-                />
-              </Form.Group>
+              <Form.Label>{`at ${formatTimestamp(videoProgress)}`}</Form.Label>
             </Col>
           </Row>
           <Button
@@ -110,5 +97,6 @@ class CommentUpload extends Component {
 }
 
 CommentUpload.propTypes = propTypes;
+CommentUpload.defaultProps = defaultProps;
 
 export default CommentUpload;

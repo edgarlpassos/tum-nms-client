@@ -21,6 +21,12 @@ class VideoItem extends Component {
       S3url: null,
       userId: null,
     };
+
+    this.videoPlayer = null;
+
+    this.handleVideoProgressChange = this.handleVideoProgressChange.bind(this);
+    this.handleSeek = this.handleSeek.bind(this);
+    this.ref = (videoPlayer) => { this.videoPlayer = videoPlayer; };
   }
 
   async componentDidMount() {
@@ -28,18 +34,46 @@ class VideoItem extends Component {
       const { match } = this.props;
       const video = await API.get('videocloud', `/videos/${match.params.id}`);
       const S3url = await getFile(video.location);
-      const user = await Auth.currentAuthenticatedUser();
+      let userId;
 
-      const userId = parseInt(user.attributes['custom:id'], 10);
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        userId = parseInt(user.attributes['custom:id'], 10);
+      } catch (error) {
+        // do nothing - users can see the videos without being authed
+      }
 
-      this.setState({ video, S3url, userId });
+      const comments = await API.get('videocloud', `/comments/${video.id}/${userId || 0}`);
+
+      this.setState({
+        video,
+        S3url,
+        userId,
+        comments,
+      });
     } catch (error) {
       console.error(error);
     }
   }
 
+  handleSeek(videoProgress) {
+    if (!this.videoPlayer) return;
+    window.scrollTo(0, this.videoPlayer.offsetTop);
+    this.videoPlayer.setProgress(videoProgress);
+  }
+
+  handleVideoProgressChange(videoProgress) {
+    this.setState({ videoProgress });
+  }
+
   renderAux() {
-    const { video, S3url, userId } = this.state;
+    const {
+      comments,
+      video,
+      videoProgress,
+      S3url,
+      userId,
+    } = this.state;
 
     if (video === null) {
       return (
@@ -51,7 +85,13 @@ class VideoItem extends Component {
 
     return (
       <div>
-        <VideoPlayer url={S3url} />
+        <VideoPlayer
+          comments={comments}
+          ref={this.ref}
+          url={S3url}
+          videoName={video.location}
+          handleVideoProgressChange={this.handleVideoProgressChange}
+        />
         <h1>{video.name}</h1>
         <span>
           <Link to={`/profile/${video.owner}`} className="active bold">
@@ -60,7 +100,13 @@ class VideoItem extends Component {
           <p className="grey">{`Published on: ${new Date(video.createdAt).toDateString()}`}</p>
         </span>
         <hr className="mt-0 mb-4" />
-        <CommentFeed videoId={video.id} userId={userId} />
+        <CommentFeed
+          comments={comments}
+          handleSeek={this.handleSeek}
+          videoId={video.id}
+          userId={userId}
+          videoProgress={videoProgress}
+        />
       </div>
     );
   }
