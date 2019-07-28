@@ -48,7 +48,7 @@ class VideoUpload extends Component {
       await API.post('videocloud', '/videos', {
         body: {
           name: videoName,
-          location,
+          location: location.split('/')[0],
           owner: user.attributes['custom:id'],
         },
       });

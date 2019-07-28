@@ -17,7 +17,7 @@ const propTypes = {
   })).isRequired,
 };
 
-const imageNameFromVideoName = videoName => `strips/${videoName.split('/')[1].split('.')[0]}.png`;
+const imageNameFromVideoName = videoName => `strips/${videoName.split('.')[0]}.png`;
 
 const overlapsActiveComment = (comment, activeCommentMap) => {
   for (let i = -2; i < 5; i++) {
@@ -196,19 +196,23 @@ class VideoStrip extends Component {
       <div
         className={`VideoStrip ${moving ? 'grabbing' : ''}`}
         ref={this.ref}
-        onMouseDown={() => { this.setState({ moving: true }); }}
-        onMouseUp={(event) => {
-          this.setState({ moving: false });
-          this.handleHandleDrag(event);
-        }}
-        onMouseMove={(event) => { this.handleHandleDrag(event); }}
       >
-        <img src={stripImageLink} alt="Video Strip" />
-        <div className="played" style={{ width: playedWidth }}>
-          <img src={stripImageLink} alt="Video Strip Dark" />
+        <div
+          className="StripController"
+          onMouseDown={() => { this.setState({ moving: true }); }}
+          onMouseUp={(event) => {
+            this.setState({ moving: false });
+            this.handleHandleDrag(event);
+          }}
+          onMouseMove={(event) => { this.handleHandleDrag(event); }}
+        >
+          <img src={stripImageLink} alt="Video Strip" />
+          <div className="played" style={{ width: playedWidth }}>
+            <img src={stripImageLink} alt="Video Strip Dark" />
+          </div>
+          <div className="handle" style={{ left: playedWidth }} />
+            {this.renderCommentIcons()}
         </div>
-        <div className="handle" style={{ left: playedWidth }} />
-        {this.renderCommentIcons()}
         {this.renderComment()}
       </div>
     );

@@ -10,7 +10,7 @@
   margin: 0 43px;
   position: relative;
   top: -35px;
-  max-height: 150px;
+  min-height: 150px;
 }
 
 .VideoStrip img {
@@ -48,6 +48,12 @@
 
 .VideoStrip .handle:hover {
   cursor: grab;
+}
+
+.QualityControl {
+  position: relative;
+  left: 45px;
+  bottom: 5px;
 }
 
 .VideoStrip .activeComment {

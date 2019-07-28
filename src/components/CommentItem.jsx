@@ -14,8 +14,8 @@ const propTypes = {
     timestamp: PropTypes.number,
     created_by: PropTypes.number,
     username: PropTypes.string,
-    n_likes: PropTypes.number,
-    liked: PropTypes.number,
+    n_likes: PropTypes.string,
+    liked: PropTypes.string,
     createdAt: PropTypes.string,
     updatedAt: PropTypes.string,
   }).isRequired,
@@ -30,6 +30,7 @@ const defaultProps = {
 class CommentItem extends Component {
   constructor(props) {
     super(props);
+    console.log(props);
 
     const { comment } = this.props;
 
@@ -94,7 +95,7 @@ class CommentItem extends Component {
 
     const { liked } = this.state;
 
-    if (liked === 0) {
+    if (liked == '0') {
       return (
         <Button type="button" onClick={this.addLike} size="sm" id="like" className="btn btn-default like" aria-label="Like">
           &nbsp;like&nbsp;

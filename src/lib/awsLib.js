@@ -5,9 +5,13 @@ export async function uploadFile(file) {
 
   const stored = await Storage.put(filename, file, { contentType: file.type });
 
-  return stored.key;
+  return stored.key.split('/')[1];
 }
 
 export async function getFile(fileKey) {
   return Storage.get(fileKey);
+}
+
+export async function listFiles(path) {
+  return Storage.list(path);
 }

@@ -3,7 +3,7 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 import { Link } from 'react-router-dom';
 import { API, Auth } from 'aws-amplify';
 import { Container, Spinner } from 'react-bootstrap';
-import { getFile } from '../lib/awsLib';
+import { getFile, listFiles } from '../lib/awsLib';
 import CommentFeed from '../components/CommentFeed';
 import VideoPlayer from '../components/VideoPlayer';
 import './VideoItem.css';
@@ -18,8 +18,9 @@ class VideoItem extends Component {
 
     this.state = {
       video: null,
-      S3url: null,
+      urls: {},
       userId: null,
+      maxRes: null,
     };
 
     this.videoPlayer = null;
@@ -33,9 +34,12 @@ class VideoItem extends Component {
     try {
       const { match } = this.props;
       const video = await API.get('videocloud', `/videos/${match.params.id}`);
-      const S3url = await getFile(video.location);
-      let userId;
+      let files = await listFiles('outputs/');
+      files = files.filter(({ key }) => (key.split('/')[1].split('_')[1] === video.location)).map(({ key }) => key);
+      const urls = await this.getVideoUrls(files);
+      const maxRes = Math.max(...Object.keys(urls));
 
+      let userId;
       try {
         const user = await Auth.currentAuthenticatedUser();
         userId = parseInt(user.attributes['custom:id'], 10);
@@ -47,13 +51,28 @@ class VideoItem extends Component {
 
       this.setState({
         video,
-        S3url,
+        urls,
         userId,
         comments,
+        maxRes,
       });
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async getVideoUrls(files) {
+    const promises = files.map(async (key) => {
+      const url = await getFile(key);
+      return { res: key.split('_')[0].split('/')[1], url };
+    });
+
+    const array = await Promise.all(promises);
+
+    return array.reduce((result, value) => {
+      result[value.res] = value.url;
+      return result;
+    }, {});
   }
 
   handleSeek(videoProgress) {
@@ -69,9 +88,10 @@ class VideoItem extends Component {
   renderAux() {
     const {
       comments,
+      maxRes,
       video,
       videoProgress,
-      S3url,
+      urls,
       userId,
     } = this.state;
 
@@ -88,9 +108,10 @@ class VideoItem extends Component {
         <VideoPlayer
           comments={comments}
           ref={this.ref}
-          url={S3url}
+          urls={urls}
           videoName={video.location}
           handleVideoProgressChange={this.handleVideoProgressChange}
+          startResolution={maxRes}
         />
         <h1>{video.name}</h1>
         <span>
