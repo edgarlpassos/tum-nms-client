@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Container, Col, Row } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
+import { getFile } from '../lib/awsLib';
 
 const propTypes = {
   video: PropTypes.shape({
@@ -17,30 +18,44 @@ const propTypes = {
   }).isRequired,
 };
 
-function PreviewItem(props) {
-  const { video } = props;
+class PreviewItem extends Component {
+  constructor(props) {
+    super(props);
 
-  return (
-    <Container className="PreviewItem">
-      <Row>
-        <Col md="auto">
-          <pre>Thumbnail maybe?</pre>
-        </Col>
-        <Col>
-          <Link to={`/video/${video.id}`} className="active">
-            <h2>{video.name}</h2>
-          </Link>
-          <p>
+    this.state = { thumbnailUrl: '' };
+  }
+
+  async componentDidMount() {
+    const { video: { location } } = this.props;
+    const videoFilename = location.split('.')[0];
+    const thumbnailUrl = await getFile(`thumbnails/${videoFilename}_thumbnail.png`);
+
+    this.setState({ thumbnailUrl });
+  }
+
+  render() {
+    const { video } = this.props;
+    const { thumbnailUrl } = this.state;
+
+    return (
+      <Card style={{ width: '18rem' }}>
+        <Card.Img variant="top" src={thumbnailUrl} />
+        <Card.Body>
+          <Card.Title>
+            <Link to={`/video/${video.id}`} className="active">
+              {video.name}
+            </Link>
+          </Card.Title>
+          <Card.Text>
             <Link to={`/profile/${video.owner}`} className="active bold">
               {video.User.username}
             </Link>
-          </p>
-          <p className="grey">{`Published on: ${new Date(video.createdAt).toDateString()}`}</p>
-        </Col>
-      </Row>
-      <hr className="mt-5 mb-5" />
-    </Container>
-  );
+            <p className="grey">{`Published on: ${new Date(video.createdAt).toDateString()}`}</p>
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    );
+  }
 }
 
 PreviewItem.propTypes = propTypes;
