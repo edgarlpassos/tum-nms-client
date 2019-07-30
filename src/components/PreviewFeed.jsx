@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
-import { Container, Spinner } from 'react-bootstrap';
+import { CardColumns, Container, Spinner } from 'react-bootstrap';
 import PreviewItem from './PreviewItem';
 
 const propTypes = {
@@ -48,9 +48,9 @@ class PreviewFeed extends Component {
     }
 
     return (
-      <div>
+      <CardColumns>
         {videos.map(video => <PreviewItem video={video} key={video.id} />)}
-      </div>
+      </CardColumns>
     );
   }
 
