@@ -6,6 +6,7 @@ import { getFile } from '../lib/awsLib';
 import StripComment from './StripComment';
 
 const propTypes = {
+  handleActiveComments: PropTypes.func.isRequired,
   handleSeek: PropTypes.func.isRequired,
   progress: PropTypes.number.isRequired,
   totalLength: PropTypes.number.isRequired,
@@ -54,7 +55,7 @@ class VideoStrip extends Component {
 
     this.handle = null;
 
-    this.handleHandleDrage = this.handleHandleDrag.bind(this);
+    this.handleHandleDrag = this.handleHandleDrag.bind(this);
     this.ref = (handle) => { this.handle = handle; };
   }
 
@@ -108,7 +109,7 @@ class VideoStrip extends Component {
   }
 
   updateCommentLists() {
-    const { comments, totalLength } = this.props;
+    const { comments, handleActiveComments, totalLength } = this.props;
     const activeCommentMap = {};
     const listedCommentMap = {};
 
@@ -134,6 +135,7 @@ class VideoStrip extends Component {
     });
 
     this.setState({ activeComments, listedComments });
+    handleActiveComments(activeComments);
   }
 
   handleHandleDrag(event) {
