@@ -50,10 +50,15 @@
   cursor: grab;
 }
 
-.QualityControl {
+.Controls {
   position: relative;
   left: 45px;
   bottom: 5px;
+}
+
+.Controls .dropdown {
+  display: inline;
+  margin-right: 5px;
 }
 
 .VideoStrip .activeComment {

@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
+import { API } from 'aws-amplify';
 
 const propTypes = {
+  activeComments: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    username: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+  })).isRequired,
   defaultResolution: PropTypes.number.isRequired,
   handleResolutionChange: PropTypes.func.isRequired,
   resolutions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  videoName: PropTypes.string.isRequired,
 };
 
 class VideoControls extends Component {
@@ -13,9 +20,14 @@ class VideoControls extends Component {
     super(props);
     const { defaultResolution } = this.props;
 
-    this.state = { resolution: defaultResolution };
+    this.state = {
+      loading: false,
+      exportUrl: '',
+      resolution: defaultResolution,
+    };
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleExportVideo = this.handleExportVideo.bind(this);
   }
 
   handleSelect(key) {
@@ -26,6 +38,20 @@ class VideoControls extends Component {
 
     this.setState({ resolution: key });
     handleResolutionChange(key);
+  }
+
+  async handleExportVideo() {
+    this.setState({ loading: true });
+
+    const { activeComments: comments, videoName } = this.props;
+    const { resolution } = this.state;
+
+    const videoKey = `public/outputs/${resolution}_${videoName}`;
+    const { archiveUrl: exportUrl } = await API.post('videocloud', '/exportVideo', {
+      body: { comments, videoKey },
+    });
+
+    this.setState({ exportUrl, loading: false });
   }
 
   renderResolutions() {
@@ -42,19 +68,36 @@ class VideoControls extends Component {
     ));
   }
 
+  renderButton() {
+    const { exportUrl, loading } = this.state;
+
+    return (
+      <span>
+        <Button
+          onClick={this.handleExportVideo}
+          variant="secondary"
+        >
+          {loading ? 'Loading...' : 'Export Video'}
+        </Button>
+        {exportUrl ? <a href={exportUrl}> Click here to download</a> : null}
+      </span>
+    );
+  }
+
   render() {
     const { resolution } = this.state;
 
     return (
-      <div className="QualityControl">
+      <div className="Controls">
         <Dropdown>
           <Dropdown.Toggle variant="secondary">
-            {`${resolution}p`}
+            {`Quality: ${resolution}p`}
           </Dropdown.Toggle>
           <Dropdown.Menu>
             {this.renderResolutions()}
           </Dropdown.Menu>
         </Dropdown>
+        {this.renderButton()}
       </div>
     );
   }

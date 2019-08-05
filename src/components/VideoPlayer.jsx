@@ -20,6 +20,7 @@ class VideoPlayer extends Component {
     const { startResolution } = this.props;
 
     this.state = {
+      activeComments: [],
       progress: 0,
       duration: 1,
       playing: false,
@@ -32,6 +33,7 @@ class VideoPlayer extends Component {
       this.player = player;
     };
 
+    this.handleActiveComments = this.handleActiveComments.bind(this);
     this.handleStripSeek = this.handleStripSeek.bind(this);
     this.handleResolutionChange = this.handleResolutionChange.bind(this);
     this.handleVideoDurationChange = this.handleVideoDurationChange.bind(this);
@@ -40,6 +42,10 @@ class VideoPlayer extends Component {
 
   setProgress(seconds) {
     this.handleStripSeek(seconds);
+  }
+
+  handleActiveComments(activeComments) {
+    this.setState({ activeComments });
   }
 
   handleStripSeek(deltaSeconds) {
@@ -72,6 +78,7 @@ class VideoPlayer extends Component {
       startResolution,
     } = this.props;
     const {
+      activeComments,
       duration,
       playing,
       progress,
@@ -81,9 +88,11 @@ class VideoPlayer extends Component {
     return (
       <Container className="VideoPlayer" fluid>
         <VideoControls
+          activeComments={activeComments}
           defaultResolution={startResolution}
           handleResolutionChange={this.handleResolutionChange}
           resolutions={Object.keys(urls)}
+          videoName={videoName}
         />
         <ReactPlayer
           ref={this.ref}
@@ -98,6 +107,7 @@ class VideoPlayer extends Component {
           onProgress={this.handleVideoProgressChange}
         />
         <VideoStrip
+          handleActiveComments={this.handleActiveComments}
           handleSeek={this.handleStripSeek}
           videoName={videoName}
           progress={progress}
