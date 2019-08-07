@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { API } from 'aws-amplify';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import PreviewFeed from '../components/PreviewFeed';
+import Loader from '../components/Loader';
 
 const propTypes = {
   match: ReactRouterPropTypes.match.isRequired,
@@ -31,11 +32,7 @@ class Profile extends Component {
     const { user } = this.state;
 
     if (user === null) {
-      return (
-        <Spinner animation="border" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
-      );
+      return <Loader />;
     }
 
     return (
