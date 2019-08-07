@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
-import { CardColumns, Container, Spinner } from 'react-bootstrap';
+import { CardColumns, Container } from 'react-bootstrap';
 import PreviewItem from './PreviewItem';
+import Loader from './Loader';
 
 const propTypes = {
   owner: PropTypes.number,
@@ -40,11 +41,7 @@ class PreviewFeed extends Component {
     const { videos } = this.state;
 
     if (videos === null) {
-      return (
-        <Spinner animation="border" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
-      );
+      return <Loader />;
     }
 
     return (

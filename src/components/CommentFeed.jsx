@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import CommentUpload from './CommentUpload';
 import CommentItem from './CommentItem';
 
@@ -17,41 +17,30 @@ const defaultProps = {
   videoProgress: 0,
 };
 
-class CommentFeed extends Component {
-  renderAux() {
-    const { handleSeek, userId, comments } = this.props;
+function CommentFeed(props) {
+  const {
+    comments,
+    videoId,
+    userId,
+    handleSeek,
+    videoProgress,
+  } = props;
 
-    if (comments === null) {
-      return (
-        <Spinner animation="border" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
-      );
-    }
-
-    return (
+  return (
+    <Container className="CommentFeed">
+      { userId ? <CommentUpload videoId={videoId} videoProgress={videoProgress} /> : null}
       <div>
         {comments.map(comment => (
-          <CommentItem handleSeek={handleSeek} comment={comment} userId={userId} key={comment.id} />
+          <CommentItem
+            handleSeek={handleSeek}
+            comment={comment}
+            userId={userId}
+            key={comment.id}
+          />
         ))}
       </div>
-    );
-  }
-
-  render() {
-    const {
-      videoProgress,
-      videoId,
-      userId,
-    } = this.props;
-
-    return (
-      <Container className="CommentFeed">
-        { userId ? <CommentUpload videoId={videoId} videoProgress={videoProgress} /> : null}
-        { this.renderAux() }
-      </Container>
-    );
-  }
+    </Container>
+  );
 }
 
 CommentFeed.propTypes = propTypes;

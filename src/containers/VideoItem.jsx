@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { Link } from 'react-router-dom';
 import { API, Auth } from 'aws-amplify';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { getFile, listFiles } from '../lib/awsLib';
 import CommentFeed from '../components/CommentFeed';
 import VideoPlayer from '../components/VideoPlayer';
+import Loader from '../components/Loader';
 import './VideoItem.css';
 
 const propTypes = {
@@ -21,6 +22,8 @@ class VideoItem extends Component {
       urls: {},
       userId: null,
       maxRes: null,
+      videoProgress: null,
+      comments: null,
     };
 
     this.videoPlayer = null;
@@ -53,8 +56,8 @@ class VideoItem extends Component {
         video,
         urls,
         userId,
-        comments,
         maxRes,
+        comments,
       });
     } catch (error) {
       console.error(error);
@@ -87,20 +90,16 @@ class VideoItem extends Component {
 
   renderAux() {
     const {
-      comments,
-      maxRes,
       video,
-      videoProgress,
       urls,
       userId,
+      maxRes,
+      videoProgress,
+      comments,
     } = this.state;
 
-    if (video === null) {
-      return (
-        <Spinner animation="border" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
-      );
+    if (comments === null) {
+      return <Loader />;
     }
 
     return (
@@ -123,9 +122,9 @@ class VideoItem extends Component {
         <hr className="mt-0 mb-4" />
         <CommentFeed
           comments={comments}
-          handleSeek={this.handleSeek}
           videoId={video.id}
           userId={userId}
+          handleSeek={this.handleSeek}
           videoProgress={videoProgress}
         />
       </div>

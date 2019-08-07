@@ -25,7 +25,7 @@ const propTypes = {
 
 const defaultProps = {
   userId: null,
-}
+};
 
 class CommentItem extends Component {
   constructor(props) {
@@ -89,20 +89,35 @@ class CommentItem extends Component {
   renderButton() {
     const { userId } = this.props;
     if (!userId) {
-      return;
+      return null;
     }
 
     const { liked } = this.state;
 
     if (liked === 0) {
       return (
-        <Button type="button" onClick={this.addLike} size="sm" id="like" className="btn btn-default like" aria-label="Like">
+        <Button
+          type="button"
+          onClick={this.addLike}
+          size="sm"
+          id="like"
+          className="btn btn-default like"
+          aria-label="Like"
+        >
           &nbsp;like&nbsp;
         </Button>
       );
     }
+
     return (
-      <Button type="button" onClick={this.rmLike} size="sm" id="like" className="btn btn-default like" aria-label="Like">
+      <Button
+        type="button"
+        onClick={this.rmLike}
+        size="sm"
+        id="like"
+        className="btn btn-default like"
+        aria-label="Unlike"
+      >
         unlike
       </Button>
     );
