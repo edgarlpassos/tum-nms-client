@@ -29,9 +29,12 @@ class VCNavbar extends Component {
 
     if (childProps.isAuthenticated) {
       return (
-        <Nav.Link as={Link} onClick={this.handleLogout}>
-          Logout
-        </Nav.Link>
+        <>
+          <Nav.Link as={Link} to="/upload">Upload</Nav.Link>
+          <Nav.Link as={Link} onClick={this.handleLogout}>
+            Logout
+          </Nav.Link>
+        </>
       );
     }
 
