@@ -1,7 +1,8 @@
 import { Storage } from 'aws-amplify';
 
 export async function uploadFile(file) {
-  const filename = `videos/${Date.now()}-${file.name}`;
+  const name = file.name.replace(/\s/g, '');
+  const filename = `videos/${Date.now()}-${name}`;
 
   const stored = await Storage.put(filename, file, { contentType: file.type });
 
