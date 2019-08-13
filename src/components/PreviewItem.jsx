@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
 import { getFile } from '../lib/awsLib';
+import { Auth } from 'aws-amplify';
 
 const propTypes = {
   video: PropTypes.shape({
@@ -22,29 +23,56 @@ class PreviewItem extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { thumbnailUrl: '' };
+    this.state = {
+      thumbnailUrl: '',
+      available: true,
+      username: '',
+    };
+
+    this.handleImageError = this.handleImageError.bind(this);
   }
 
   async componentDidMount() {
     const { video: { location } } = this.props;
     const videoFilename = location.split('.')[0];
     const thumbnailUrl = await getFile(`thumbnails/${videoFilename}_thumbnail.png`);
+    const { username } = await Auth.currentAuthenticatedUser();
 
+    this.setState({ thumbnailUrl, username });
+  }
+
+  async handleImageError() {
+    this.setState({ available: false });
+    const thumbnailUrl = await getFile('thumbnails/kitty.png');
     this.setState({ thumbnailUrl });
+  }
+
+  renderLink() {
+    const { video } = this.props;
+
+    return (
+      <Link to={`/video/${video.id}`} className="active">
+        {video.name}
+      </Link>
+    );
   }
 
   render() {
     const { video } = this.props;
-    const { thumbnailUrl } = this.state;
+    const { available, thumbnailUrl, username } = this.state;
+
+    if (!available && video.User.username !== username) return null;
 
     return (
-      <Card style={{ width: '18rem' }}>
-        <Card.Img variant="top" src={thumbnailUrl} />
+      <Card style={{ width: '18rem' }} bg={available ? 'white' : 'light'}>
+        <Card.Img
+          variant="top"
+          src={thumbnailUrl}
+          onError={this.handleImageError}
+        />
         <Card.Body>
           <Card.Title>
-            <Link to={`/video/${video.id}`} className="active">
-              {video.name}
-            </Link>
+            {available ? this.renderLink() : `${video.name} - Processing`}
           </Card.Title>
           <Card.Text>
             <Link to={`/profile/${video.owner}`} className="active bold">
