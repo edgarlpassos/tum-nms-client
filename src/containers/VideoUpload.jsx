@@ -4,6 +4,7 @@ import { Button, Form } from 'react-bootstrap';
 import { API, Auth } from 'aws-amplify';
 import './VideoUpload.css';
 import { uploadFile } from '../lib/awsLib';
+import Loader from '../components/Loader';
 
 const propTypes = {
   history: ReactRouterPropTypes.history.isRequired,
@@ -15,6 +16,7 @@ class VideoUpload extends Component {
 
     this.state = {
       file: null,
+      loading: false,
       videoName: '',
     };
 
@@ -41,6 +43,8 @@ class VideoUpload extends Component {
 
     event.preventDefault();
 
+    this.setState({ loading: true });
+
     try {
       const user = await Auth.currentAuthenticatedUser();
       const location = await uploadFile(file);
@@ -57,6 +61,8 @@ class VideoUpload extends Component {
     } catch (error) {
       alert(error);
     }
+
+    this.setState({ loading: false });
   }
 
   formIsInvalid() {
@@ -71,7 +77,9 @@ class VideoUpload extends Component {
   }
 
   render() {
-    const { videoName } = this.state;
+    const { videoName, loading } = this.state;
+
+    if (loading) return <Loader />;
 
     return (
       <div className="VideoUpload">
