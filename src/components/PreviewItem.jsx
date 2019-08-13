@@ -36,7 +36,13 @@ class PreviewItem extends Component {
     const { video: { location } } = this.props;
     const videoFilename = location.split('.')[0];
     const thumbnailUrl = await getFile(`thumbnails/${videoFilename}_thumbnail.png`);
-    const { username } = await Auth.currentAuthenticatedUser();
+
+    let username = '';
+    try {
+      username = await Auth.currentAuthenticatedUser().username;
+    } catch (err) {
+      // Do nothing
+    }
 
     this.setState({ thumbnailUrl, username });
   }
